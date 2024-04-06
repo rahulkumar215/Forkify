@@ -14,7 +14,32 @@ class RecipeView extends View {
     })
   }
 
+  addhandlerServings(handler){
+    this._parentElement.addEventListener('click', (e) => {
+      const btn = e.target.closest('.btn--update-servings');
+
+      if(!btn) return;
+  
+      const servings = +btn.dataset.serv;
+
+      if(servings < 1) return;
+      
+      handler(servings);
+    })
+  }
+
+  addHandlerBookMark(handler){
+    this._parentElement.addEventListener('click', (e) => {
+      const btn = e.target.closest('.btn--round');
+
+      if(!btn) return;
+
+      handler();
+    })
+  }
+
   _generateMarkup() {
+    console.log(this._data);
     return `
               <figure class="recipe__fig">
                 <img src="${this._data.image}" alt="${
@@ -45,12 +70,12 @@ class RecipeView extends View {
                   <span class="recipe__info-text">servings</span>
       
                   <div class="recipe__info-buttons">
-                    <button class="btn--tiny btn--increase-servings">
+                    <button data-serv=${this._data.servings - 1} class="btn--tiny btn--update-servings">
                       <svg>
                         <use href="${icons}#icon-minus-circle"></use>
                       </svg>
                     </button>
-                    <button class="btn--tiny btn--increase-servings">
+                    <button data-serv=${this._data.servings + 1} class="btn--tiny btn--update-servings">
                       <svg>
                         <use href="${icons}#icon-plus-circle"></use>
                       </svg>
@@ -58,14 +83,14 @@ class RecipeView extends View {
                   </div>
                 </div>
       
-                <div class="recipe__user-generated">
+                <div class="recipe__user-generated ${this._data.key ? '' : 'hidden'}">
                   <svg>
-                    <use href="${icons}g#icon-user"></use>
+                    <use href="${icons}#icon-user"></use>
                   </svg>
                 </div>
                 <button class="btn--round">
                   <svg class="">
-                    <use href="${icons}#icon-bookmark-fill"></use>
+                    <use href="${icons}#icon-bookmark${this._data.bookMarked ? "-fill" : ''}"></use>
                   </svg>
                 </button>
               </div>

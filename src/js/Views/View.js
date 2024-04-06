@@ -11,7 +11,7 @@ export default class View {
     this._data = data;
     const markup = this._generateMarkup();
 
-    if (!render) return;
+    if (!render) return markup;
 
     this._clear();
     this._parentElement.insertAdjacentHTML('afterbegin', markup);
@@ -21,8 +21,35 @@ export default class View {
     this._parentElement.innerHTML = '';
   }
 
+  update(data) {
+
+    this._data = data;
+    const newMarkup = this._generateMarkup();
+
+    const newDOM = document.createRange().createContextualFragment(newMarkup);
+    const newElement = newDOM.querySelectorAll('*');
+    const curElement = this._parentElement.querySelectorAll('*');
+
+    newElement.forEach(function (newEl, i) {
+      const curEl = curElement[i];
+
+      if (
+        !newEl.isEqualNode(curEl) &&
+        newEl.firstChild?.nodeValue.trim() !== ''
+      ) {
+        curEl.textContent = newEl.textContent;
+      }
+
+      if (!newEl.isEqualNode(curEl)) {
+        Array.from(newEl.attributes).forEach(attr => {
+          curEl.setAttribute(attr.name, attr.value);
+        });
+      }
+    });
+  }
+
   renderSpinner() {
-    const markup =  `
+    const markup = `
     <div class="spinner">
       <svg>
         <use href="${icons}#icon-loader"></use>
